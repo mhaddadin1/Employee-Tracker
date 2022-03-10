@@ -57,40 +57,57 @@ function init() {
     ])
     .then((answers) => {
       if (answers.Questions === "viewEmp") {
+        console.log(answers);
         viewEmployee();
       } else if (answers.Questions === "viewDepart") {
+        console.log(answers);
         viewDepartments();
       } else if (answers.Questions === "viewRole") {
+        console.log(answers);
         viewRoles();
       } else if (answers.Questions === "addEmp") {
+        console.log(answers);
         addEmployee();
       } else if (answers.Questions === "addDep") {
+        console.log(answers);
         addDepartment();
       } else if (answers.Questions === "addRole") {
+        console.log(answers);
         addRole();
       } else if (answers.Questions === "updateEmp") {
+        console.log(answers);
         updateEmployee();
       }
     });
 
-  function viewEmployee() {}
-
-  function viewDepartments() {
-    const sql = `SELECT * FROM department`;
-    db.query(sql, (err, rows) => {
-      console.table(rows);
+  function viewEmployee() {
+    const sql = `SELECT * FROM employee`;
+    db.query(sql, (err, res) => {
+      console.table(res);
     });
   }
 
-  function viewRoles() {}
+  function viewDepartments() {
+    const sql = `SELECT * FROM department`;
+    db.query(sql, (err, res) => {
+      console.table(res);
+    });
+  }
 
-  function addDepartment() {}
+  function viewRoles() {
+    const sql = `SELECT * FROM role`;
+    db.query(sql, (err, res) => {
+      console.table(res);
+    });
+  }
 
-  function addRole() {}
+  // function addDepartment() {}
 
-  function addEmployee() {}
+  // function addRole() {}
 
-  function updateEmployee() {}
+  // function addEmployee() {}
+
+  // function updateEmployee() {}
 }
 
 init();
