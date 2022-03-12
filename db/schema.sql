@@ -12,13 +12,17 @@ create table role (
     id int auto_increment primary key,
     title varchar(30) not null,
     salary decimal,
-    department_id int REFERENCES departments(id)
+    department_id int,
+    foreign key (department_id)
+    REFERENCES departments(id);
 );
 
 create table employee (
     id int auto_increment primary key,
     first_name varchar(30) not null,
     last_name varchar(30) not null,
-    manager_id int  REFERENCES employee(id),
-    role_id int  REFERENCES role(id));
+     role_id int,  
+    manager_id int,
+    foreign key (role_id),
+    REFERENCES role(id);
 
