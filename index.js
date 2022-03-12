@@ -21,35 +21,57 @@ function init() {
         message: "what would you like to do?",
         choices: [
           {
-            name: "View all employees",
-            value: "viewEmp",
-          },
-          {
             name: "View all departments",
             value: "viewDepart",
           },
+
           {
             name: "View roles",
             value: "viewRole",
           },
+
           {
-            name: "add employee",
-            value: "addEmp",
+            name: "View all employees",
+            value: "viewEmp",
           },
+
           {
-            name: "add department",
+            name: "Add Department",
             value: "addDep",
           },
+
           {
-            name: "add role",
+            name: "Add Role",
             value: "addRole",
           },
+
           {
-            name: "update employee",
-            value: "updateEmp",
+            name: "Add Employee",
+            value: "addEmp",
           },
+
+          // {
+          //   name: "Update Employee",
+          //   value: "updateEmp",
+          // },
+
+          // {
+          //   name: "Delete Department",
+          //   value: "delDep",
+          // },
+
+          // {
+          //   name: "Delete Role",
+          //   value: "delRol",
+          // },
+
+          // {
+          //   name: "Delete Employee",
+          //   value: "delemp",
+          // },
+
           {
-            name: "done",
+            name: "Done",
             value: "done",
           },
         ],
@@ -73,13 +95,6 @@ function init() {
       }
     });
 
-  function viewEmployee() {
-    db.query("select * from employee", function (err, results) {
-      console.table(results);
-      init();
-    });
-  }
-
   function viewDepartments() {
     db.query("select * from department", function (err, results) {
       console.table(results);
@@ -92,6 +107,78 @@ function init() {
       console.table(results);
       init();
     });
+  }
+
+  function viewEmployee() {
+    db.query("select * from employee", function (err, results) {
+      console.table(results);
+      init();
+    });
+  }
+
+  function addDepartment() {
+    inquirer
+      .prompt([
+        {
+          name: "departId",
+          type: "number",
+          message: "what is the department id?",
+        },
+        {
+          name: "departName",
+          type: "input",
+          message: "what is the departments name?",
+        },
+      ])
+      .then((answers) => {
+        db.query("insert into department(id, name) values(?,?)", [
+          answers.departId,
+          answers.departName,
+        ]);
+        init();
+      });
+  }
+
+  function addRole() {
+    inquirer
+      .prompt([
+        {
+          name: "roleId",
+          type: "number",
+          message: "what is the role id?",
+        },
+        {
+          name: "role",
+          type: "input",
+          message: "what role would you like to add?",
+        },
+        {
+          name: "roleSalary",
+          type: "number",
+          message: "what is the roles salary?",
+        },
+      ])
+      .then((answers) => {
+        db.query("select * from department", function (err, results) {
+          const depart = results.map(({ id }) => ({
+            name: id,
+          }));
+          inquirer
+            .prompt({
+              type: "list",
+              name: "id",
+              message: "what is the department id for this role?",
+              choices: depart,
+            })
+            .then((depart) => {
+              db.query(
+                "insert into role(id, title, salary, department_id) values(?,?,?,?)",
+                [answers.roleId, answers.role, answers.roleSalary, depart.id]
+              );
+              init();
+            });
+        });
+      });
   }
 
   function addEmployee() {
@@ -153,13 +240,6 @@ function init() {
             });
         });
       });
-  }
-
-  function addRole() {}
-
-  function addDepartment() {
-    //const sql = `insert into department`;
-    //db.query("insert into department (name) values ("");
   }
 }
 
