@@ -9,7 +9,7 @@ CREATE table department (
 );
 
 create table role (
-    id int primary key,
+    id int auto_increment primary key,
     title varchar(30) not null,
     salary decimal,
     department_id int REFERENCES departments(id)

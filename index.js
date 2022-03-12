@@ -1,19 +1,15 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
-const cTable = require("console.table");
 
 // Connect to database
-const db = mysql.createConnection(
-  {
-    host: "localhost",
-    // MySQL username,
-    user: "root",
-    // MySQL password
-    password: "Jordan23",
-    database: "employee_db",
-  },
-  console.log(`Connected to the employee_db database.`)
-);
+const db = mysql.createConnection({
+  host: "localhost",
+  // MySQL username,
+  user: "root",
+  // MySQL password
+  password: "Jordan23",
+  database: "employee_db",
+});
 
 //inquirer questions
 function init() {
@@ -52,62 +48,119 @@ function init() {
             name: "update employee",
             value: "updateEmp",
           },
+          {
+            name: "done",
+            value: "done",
+          },
         ],
       },
     ])
     .then((answers) => {
       if (answers.Questions === "viewEmp") {
-        console.log(answers);
         viewEmployee();
       } else if (answers.Questions === "viewDepart") {
-        console.log(answers);
         viewDepartments();
       } else if (answers.Questions === "viewRole") {
-        console.log(answers);
         viewRoles();
       } else if (answers.Questions === "addEmp") {
-        console.log(answers);
         addEmployee();
       } else if (answers.Questions === "addDep") {
-        console.log(answers);
         addDepartment();
       } else if (answers.Questions === "addRole") {
-        console.log(answers);
         addRole();
       } else if (answers.Questions === "updateEmp") {
-        console.log(answers);
         updateEmployee();
       }
     });
 
   function viewEmployee() {
-    const sql = `SELECT * FROM employee`;
-    db.query(sql, (err, res) => {
-      console.table(res);
+    db.query("select * from employee", function (err, results) {
+      console.table(results);
+      init();
     });
   }
 
   function viewDepartments() {
-    const sql = `SELECT * FROM department`;
-    db.query(sql, (err, res) => {
-      console.table(res);
+    db.query("select * from department", function (err, results) {
+      console.table(results);
+      init();
     });
   }
 
   function viewRoles() {
-    const sql = `SELECT * FROM role`;
-    db.query(sql, (err, res) => {
-      console.table(res);
+    db.query("select * from role", function (err, results) {
+      console.table(results);
+      init();
     });
   }
 
-  // function addDepartment() {}
+  function addEmployee() {
+    inquirer
+      .prompt([
+        {
+          name: "firstName",
+          type: "input",
+          message: "what is the first name",
+        },
+        {
+          name: "lastName",
+          type: "input",
+          message: "what is the last name",
+        },
+      ])
+      .then((answers) => {
+        db.query("select * from role", function (err, results) {
+          const role = results.map(({ id, title }) => ({
+            name: title,
+            value: id,
+          }));
+          inquirer
+            .prompt({
+              type: "list",
+              name: "id",
+              message: "what is the employees role?",
+              choices: role,
+            })
+            .then((role) => {
+              db.query(
+                "select * from employee where manager_id is null",
+                function (err, results) {
+                  const managers = results.map(({ id, last_name }) => ({
+                    name: last_name,
+                    value: id,
+                  }));
+                  inquirer
+                    .prompt({
+                      type: "list",
+                      name: "id",
+                      message: "what is the managers name?",
+                      choices: managers,
+                    })
+                    .then((manager) => {
+                      db.query(
+                        "insert into employee(first_name, last_name, manager_id, role_id ) values(?,?,?,?)",
+                        [
+                          answers.firstName,
+                          answers.lastName,
+                          manager.id,
+                          role.id,
+                        ]
+                      );
+                      init();
+                    });
+                }
+              );
+            });
+        });
+      });
+  }
 
-  // function addRole() {}
+  function addRole() {}
 
-  // function addEmployee() {}
-
-  // function updateEmployee() {}
+  function addDepartment() {
+    //const sql = `insert into department`;
+    //db.query("insert into department (name) values ("");
+  }
 }
 
 init();
